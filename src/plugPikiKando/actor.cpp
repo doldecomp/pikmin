@@ -1,5 +1,4 @@
 #include "Actor.h"
-#include "Piki.h"
 #include "SimpleAI.h"
 #include "DebugLog.h"
 
@@ -50,9 +49,9 @@ void Actor::setType(int, PikiShapeObject* shape, CreatureProp* props, SimpleAI* 
  * Address:	........
  * Size:	00002C
  */
-void Actor::startAI(int)
+void Actor::startAI(int state)
 {
-	// UNUSED FUNCTION
+	((SimpleAI*)mStateMachine)->start(this, state);
 }
 
 /*
@@ -60,9 +59,21 @@ void Actor::startAI(int)
  * Address:	........
  * Size:	0000E0
  */
-void Actor::refresh(Graphics&)
+void Actor::refresh(Graphics& gfx)
 {
-	// UNUSED FUNCTION
+	mWorldMtx.makeSRT(mScale, mRotation, mPosition);
+	gfx.useMatrix(Matrix4f::ident, 0);
+
+	Matrix4f mtx;
+	mtx.multiplyTo(gfx.mCamera->mLookAtMtx, mWorldMtx);
+
+	mPikiAnimMgr.updateContext();
+	mapMgr->getLight(mPosition.x, mPosition.z);
+
+	gfx.initRender(1, 0);
+
+	mPikiShape->mShape->updateAnim(gfx, mtx, nullptr);
+	mPikiShape->mShape->drawshape(gfx, *gfx.mCamera, nullptr);
 }
 
 /*
@@ -72,7 +83,8 @@ void Actor::refresh(Graphics&)
  */
 void Actor::update()
 {
-	// UNUSED FUNCTION
+	doAnimation();
+	updateAI();
 }
 
 /*
@@ -92,7 +104,9 @@ void Actor::doAnimation()
  */
 void Actor::doAI()
 {
-	// UNUSED FUNCTION
+	if (mStateMachine) {
+		mStateMachine->exec(this);
+	}
 }
 
 /*
