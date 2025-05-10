@@ -4,11 +4,10 @@
 #include "types.h"
 #include "ObjectMgr.h"
 #include "AICreature.h"
-#include "PaniPikiAnimator.h"
+#include "Graphics.h"
+#include "MapMgr.h"
+#include "Piki.h"
 
-struct CreatureProp;
-struct MapMgr;
-struct PikiShapeObject;
 struct SimpleAI;
 
 /**
